@@ -102,9 +102,6 @@ const draft = {
   displayName: displayName || undefined,
   tools: [...new Set(tools)].map((name) => withOfficialLink(name, "observed")),
   stack: [...new Set(stack)].map((name) => withOfficialLink(name, "observed")),
-  workflows: [],
-  hiddenGems: [],
-  exploring: [],
   observedClis: clis,
 };
 
