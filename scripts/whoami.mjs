@@ -42,13 +42,21 @@ function saveCreds(next) {
   chmodSync(credPath, 0o600);
 }
 
-async function api(method, path, { apiBase, token, body }) {
-  const headers = { "Content-Type": "application/json" };
+async function api(method, path, { apiBase, token, body, contentType, rawBody }) {
+  const headers = {};
   if (token) headers.Authorization = `Bearer ${token}`;
+  let payload = undefined;
+  if (rawBody !== undefined) {
+    if (contentType) headers["Content-Type"] = contentType;
+    payload = rawBody;
+  } else if (body) {
+    headers["Content-Type"] = "application/json";
+    payload = JSON.stringify(body);
+  }
   const response = await fetch(`${apiBase}${path}`, {
     method,
     headers,
-    body: body ? JSON.stringify(body) : undefined,
+    body: payload,
   });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
@@ -59,6 +67,47 @@ async function api(method, path, { apiBase, token, body }) {
 
 function readProfile(path) {
   return JSON.parse(readFileSync(path, "utf8"));
+}
+
+function sniffImage(buf) {
+  if (buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return "image/jpeg";
+  if (
+    buf[0] === 0x89 &&
+    buf[1] === 0x50 &&
+    buf[2] === 0x4e &&
+    buf[3] === 0x47
+  ) {
+    return "image/png";
+  }
+  if (
+    buf[0] === 0x52 &&
+    buf[1] === 0x49 &&
+    buf[2] === 0x46 &&
+    buf[3] === 0x46 &&
+    buf[8] === 0x57 &&
+    buf[9] === 0x45 &&
+    buf[10] === 0x42 &&
+    buf[11] === 0x50
+  ) {
+    return "image/webp";
+  }
+  return null;
+}
+
+const OUTPUT_ONLY = new Set([
+  "username",
+  "publishedAt",
+  "publishedSite",
+  "avatarUrl",
+  "editToken",
+]);
+
+function patchFromProfile(profile) {
+  const patch = {};
+  for (const [key, value] of Object.entries(profile)) {
+    if (!OUTPUT_ONLY.has(key)) patch[key] = value;
+  }
+  return patch;
 }
 
 function crc32(buf) {
@@ -260,7 +309,7 @@ async function main() {
       throw new Error(`Missing ${credPath}. Publish a profile first.`);
     }
     const profile = readProfile(profilePath);
-    const { username: _ignored, ...patch } = profile;
+    const patch = patchFromProfile(profile);
     const updated = await api("PATCH", `/v1/profiles/${creds.username}`, {
       apiBase: creds.apiBase || apiBase,
       token: creds.editToken,
@@ -325,7 +374,39 @@ async function main() {
     throw new Error("Usage: whoami.mjs site <init|upload|status|publish>");
   }
 
-  throw new Error("Usage: whoami.mjs <discover|publish|update|me|site>");
+  if (command === "avatar") {
+    const auth = await requireCreds();
+    const username = creds.username;
+    if (!username) {
+      throw new Error(`Missing username in ${credPath}. Publish a profile first.`);
+    }
+    if (args.clear === "true" || args._[1] === "clear") {
+      const updated = await api("DELETE", `/v1/profiles/${username}/avatar`, auth);
+      process.stdout.write(`${JSON.stringify(updated, null, 2)}\n`);
+      return;
+    }
+    const file = args.file;
+    if (!file) {
+      throw new Error("Usage: whoami.mjs avatar --file ./photo.jpg | --clear");
+    }
+    const buf = readFileSync(file);
+    if (buf.length > 512 * 1024) {
+      throw new Error("Avatar must be 512 KiB or smaller (JPEG, PNG, or WebP)");
+    }
+    const kind = sniffImage(buf);
+    if (!kind) {
+      throw new Error("Only JPEG, PNG, and WebP avatars are allowed");
+    }
+    const updated = await api("PUT", `/v1/profiles/${username}/avatar`, {
+      ...auth,
+      contentType: kind,
+      rawBody: buf,
+    });
+    process.stdout.write(`${JSON.stringify(updated, null, 2)}\n`);
+    return;
+  }
+
+  throw new Error("Usage: whoami.mjs <discover|publish|update|me|avatar|site>");
 }
 
 main().catch((error) => {

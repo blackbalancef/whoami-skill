@@ -69,11 +69,25 @@ Later, the user talks to this agent:
 - "Remove Docker"
 - "Change my headline to …"
 - "Add an icon and link for Orca"
+- "Set my avatar from ~/Pictures/me.jpg"
 
 When adding or renaming a tool, web-search the official homepage and a small icon, then set `url` and `icon`. Rescan if useful, show a diff, then:
 
 ```bash
 node scripts/whoami.mjs update --profile ./profile.json
+```
+
+### Avatar
+
+Optional public photo. **JPEG, PNG, or WebP only** from a **local file the owner reviewed**. The API will not fetch a remote image URL (and you must not try). Never SVG or GIF.
+
+Do not scrape `Pictures/`, `Downloads/`, screenshots, or random images. Discover may propose a face photo **only if the owner already pointed at that file** or it is clearly their portrait in the current conversation.
+
+Photos from private folders need explicit user review of that exact path. This will be public. Standard EXIF/GPS is stripped when present; do not upload a photo they would not put on a public page.
+
+```bash
+node scripts/whoami.mjs avatar --file /absolute/or/relative/path.jpg
+node scripts/whoami.mjs avatar --clear
 ```
 
 ## Privacy
@@ -85,6 +99,7 @@ Never publish:
 - SSH keys
 - raw shell history
 - private documents
+- photos the owner did not explicitly review for a public page
 
 Username: `^[a-z][a-z0-9]{1,23}$`. Reserved: api, badge, create, explore, preview, skill, admin, www, whoami, settings, login, me, v1.
 
@@ -116,6 +131,8 @@ Prefer custom section headings. A section is `{ "title", "items" }` and/or `{ "t
 ```
 
 `source` is `observed` | `inferred` | `self_reported`. Optional `url` / `icon` are https official homepage and icon.
+
+GET profile JSON may include `avatarUrl`. That field is **server-generated** (our origin). Never put a remote image URL into the profile. Never send `avatar` / `avatarUrl` on publish or update except to clear with the avatar command.
 
 The older fields `tools`, `stack`, `workflows`, `hiddenGems`, `exploring`, and `howIWork` are still accepted. Do not write those keys for new profiles unless you also need them as a fallback.
 
