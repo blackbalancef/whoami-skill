@@ -25,3 +25,11 @@ whoami-skill/
 ```
 
 The skill never uploads source, `.env`, keys, or shell history. Only the JSON you approve is published. After publish, edit credentials are stored at `~/.whoami/credentials.json`. Your agent is the CMS — there is no Edit Profile page.
+
+Optional custom site:
+
+```bash
+node scripts/whoami.mjs site init --dir ./site
+node scripts/whoami.mjs site upload --dir ./site
+node scripts/whoami.mjs site publish
+```

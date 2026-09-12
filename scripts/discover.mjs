@@ -3,6 +3,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { withOfficialLink } from "./catalog.mjs";
 
 const CLIS = [
   "git",
@@ -99,8 +100,8 @@ const displayName = gitName();
 
 const draft = {
   displayName: displayName || undefined,
-  tools: [...new Set(tools)].map((name) => ({ name, source: "observed" })),
-  stack: [...new Set(stack)].map((name) => ({ name, source: "observed" })),
+  tools: [...new Set(tools)].map((name) => withOfficialLink(name, "observed")),
+  stack: [...new Set(stack)].map((name) => withOfficialLink(name, "observed")),
   workflows: [],
   hiddenGems: [],
   exploring: [],

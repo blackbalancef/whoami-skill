@@ -3,22 +3,30 @@
   "displayName": "Ivan Matveev",
   "headline": "Backend Engineer × AI",
   "tools": [
-    { "name": "Claude Code", "source": "observed" },
-    { "name": "Codex", "source": "observed" },
-    { "name": "Zed", "source": "observed" }
+    {
+      "name": "Claude Code",
+      "source": "observed",
+      "url": "https://claude.com/product/claude-code"
+    },
+    {
+      "name": "Codex",
+      "source": "observed",
+      "url": "https://openai.com/codex/"
+    },
+    { "name": "Zed", "source": "observed", "url": "https://zed.dev" }
   ],
   "stack": [
-    { "name": "Python", "source": "observed" },
-    { "name": "TypeScript", "source": "observed" }
+    { "name": "Python", "source": "observed", "url": "https://www.python.org" },
+    {
+      "name": "TypeScript",
+      "source": "observed",
+      "url": "https://www.typescriptlang.org"
+    }
   ],
-  "workflows": [
-    { "name": "Multi-agent coding", "source": "inferred" }
-  ],
+  "workflows": [{ "name": "Multi-agent coding", "source": "inferred" }],
   "hiddenGems": [
-    { "name": "Pi Agent", "source": "self_reported" }
+    { "name": "Pi Agent", "source": "self_reported", "url": "https://pi.dev" }
   ],
-  "exploring": [
-    { "name": "Agent orchestration", "source": "self_reported" }
-  ],
+  "exploring": [{ "name": "Agent orchestration", "source": "self_reported" }],
   "howIWork": "I use Markdown tasks because my coding agents can edit them."
 }
