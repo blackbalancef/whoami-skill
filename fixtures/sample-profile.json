@@ -1,16 +1,14 @@
 {
   "username": "ivan",
   "displayName": "Ivan Matveev",
-  "headline": "Backend Engineer × AI",
+  "headline": "AI Engineer",
   "sections": [
     {
-      "title": "What I actually ship",
-      "items": [
-        { "name": "Pi Agent", "source": "self_reported", "url": "https://pi.dev" }
-      ]
+      "title": "How I work",
+      "body": "Orca is the terminal and the control plane. I go Claude Code first, then Codex, then pi with z.ai (glm). I mostly work through subagents."
     },
     {
-      "title": "Tools I live in",
+      "title": "Tools",
       "items": [
         {
           "name": "Claude Code",
@@ -26,24 +24,35 @@
       ]
     },
     {
-      "title": "Languages and runtimes",
+      "title": "Skills I run",
       "items": [
-        { "name": "Python", "source": "observed", "url": "https://www.python.org" },
         {
-          "name": "TypeScript",
-          "source": "observed",
-          "url": "https://www.typescriptlang.org"
+          "name": "Superpowers",
+          "source": "self_reported",
+          "url": "https://github.com/obra/superpowers"
         }
       ]
     },
     {
-      "title": "How I work",
-      "items": [{ "name": "Multi-agent coding", "source": "inferred" }],
-      "body": "I use Markdown tasks because my coding agents can edit them."
+      "title": "Projects",
+      "items": [
+        {
+          "name": "WhoAmI",
+          "source": "self_reported",
+          "url": "https://github.com/blackbalancef/whoami-skill"
+        }
+      ]
     },
     {
-      "title": "Currently chewing on",
-      "items": [{ "name": "Agent orchestration", "source": "self_reported" }]
+      "title": "Currently exploring",
+      "body": "Looking for mix-and-match multi-agent work across providers and harnesses, not another control plane."
+    },
+    {
+      "title": "Find me",
+      "body": "At work I build a harness for an agent that helps teachers create learning courses. I also ship my own apps, Telegram bots, and services — listed below.",
+      "items": [
+        { "name": "GitHub", "source": "observed", "url": "https://github.com/blackbalancef" }
+      ]
     }
   ]
 }

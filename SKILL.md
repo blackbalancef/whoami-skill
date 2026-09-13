@@ -11,43 +11,52 @@ Do not create a new agent. Do not invent a web dashboard. Publish only JSON the 
 
 API base comes from the user's prompt (`API: https://….convex.site`), `WHOAMI_API_BASE`, or `~/.whoami/credentials.json`.
 
+The landing "Copy prompt" only installs this skill and passes a creation code. **This file is the full instruction set.** Follow it.
+
 ## Flow
 
 ```text
 DISCOVER → INTERPRET → INTERVIEW → REVIEW → PUBLISH → UPDATE
 ```
 
+Discover proposes. Interview confirms. A clean machine should already contain almost everything that belongs on the page — you ask about what you found, you do not invent a second identity.
+
 ### 1. DISCOVER
 
-Run `scripts/discover.mjs`. It inspects applications and common CLIs. It must not read `.env`, secrets, SSH keys, source code, or shell history.
+Run `scripts/discover.mjs`. It lists apps, CLIs, agent skill folders, Claude plugins, and public GitHub repos (`gh`). It must not read `.env`, secrets, SSH keys, source code, or shell history. Do not scan a code folder like `~/Develop` — that layout is local, not portable.
 
-Treat script output as **observed**.
+Treat script output as **observed candidates**, not the public profile.
 
 ### 2. INTERPRET
 
-You may infer workflows (terminal-first, AI-heavy, markdown tasks). Mark those `source: "inferred"`. Never present inference as fact.
+Do not write slogans, catchphrases, or "clever" workflow names the owner never said.
 
-Write the public profile as `sections` with headings the owner would actually use — "What I actually ship", "Tools I live in", "Currently chewing on", not frozen keys like `hiddenGems` / `exploring` / `howIWork`. Do not force the vocabulary Hidden gems / Currently exploring / Note. Discover output is raw observation; you choose the headings.
+Do not list both `Claude` and `Claude Code`. Prefer `Claude Code` when `.claude` or Claude.app is present.
 
-For each **named product, language, or tool** (not a freeform workflow phrase):
+Write the public profile as `sections` (max 8). Headings the owner would actually use. Discover is raw observation; you choose what to keep after interview.
+
+For each **named product, language, or tool** (not a freeform sentence):
 
 1. Keep `url` / `icon` if `discover.mjs` already set them.
-2. Otherwise **search the web** for the official homepage. Prefer the vendor's own domain over directories, social posts, or random GitHub clones. A project's own GitHub org is fine when that is the homepage.
+2. Otherwise search the web for the official homepage. Prefer the vendor's own domain.
 3. Set `url` to that `https://` page so the chip is clickable.
-4. **Search for a small official icon** (favicon, Simple Icons, or an SVG/PNG on the vendor domain). Set `icon` to a direct `https://` image. If you omit `icon`, the site uses the favicon of `url`.
-5. If you are not confident, **omit `url` and `icon`**. Never invent a link. Never use a search-results page, blog post, or affiliate copy.
-
-Workflows such as "Multi-agent coding" usually have no official site — leave them as name + source only.
+4. Set `icon` only if the URL **returns an image** (HTTP 200, `image/*`). Do not paste `cdn.simpleicons.org/{name}` without checking — some brands 404 (LinkedIn). If Simple Icons is a filled rounded square and the owner wants the letter mark, use the glyph without the square, or omit `icon` and let the site use the favicon of `url`.
+5. If you are not confident, **omit `url` and `icon`**. Never invent a link.
 
 ### 3. INTERVIEW
 
-Ask only what you could not learn. Typical:
+Ask only against discover output. Show the lists. Typical round:
 
-1. What are you unusually good at?
-2. What workflow would other people find useful?
-3. What are you exploring right now?
+1. **Tools** — here is what I found on the machine. Which do you actually live in? Anything missing (browser, design tool, extra model provider)?
+2. **Skills / plugins** — here are skill folders and plugins. Which do you **run**, not merely have installed? Drop leftovers (`find-skills`, one-off hooks, a whole vendor catalog you never invoke).
+3. **Projects** — here are public GitHub repos. Which are **yours to advertise**? Ask for the canonical public URL (product site, Telegram bot, GitHub). Ask if they ship anything that is not on GitHub. Do not publish clones, stars, or someone else's repo. Look for a small local logo if they say yes.
+4. **Identity** — one-line headline. Then 1–2 sentences: what they do **at work** vs **their own** apps / bots / services. Put that blurb as `body` on a `Find me` / `Links` / `Socials` section (the default page shows it under the name).
+5. **How they run agents** — grounded in the tools you found (Claude Code, Codex, Orca, Pi, …). Order, subagents, harnesses. Use **their words**. How I work is **one `body`**. Extra `items` only if they add a new fact, not a restatement of the paragraph.
+6. **Socials** — GitHub from discover. Ask LinkedIn / other profiles if missing.
+7. **Exploring** — default a `body` paragraph, no chips, unless they name discrete things to chip.
+8. **Hidden gems** — optional, only if they point at tools they love that are not already in Tools.
 
-Mark answers `source: "self_reported"`.
+If they confirm a discovered item, keep `source: "observed"`. New facts they state: `source: "self_reported"`. Never mark inference as fact. Do not infer a How I work item like "Multi-agent coding".
 
 ### 4. REVIEW
 
@@ -77,6 +86,8 @@ When adding or renaming a tool, web-search the official homepage and a small ico
 node scripts/whoami.mjs update --profile ./profile.json
 ```
 
+If this profile is the site's classic landing example, keep `tools` / `stack` / `workflows` / `howIWork` in sync with the matching sections (the landing card still reads those fields). Otherwise `sections` is enough.
+
 ### Avatar
 
 Optional public photo. **JPEG, PNG, or WebP only** from a **local file the owner reviewed**. The API will not fetch a remote image URL (and you must not try). Never SVG or GIF.
@@ -105,36 +116,60 @@ Username: `^[a-z][a-z0-9]{1,23}$`. Reserved: api, badge, create, explore, previe
 
 ## Profile shape
 
-Prefer custom section headings. A section is `{ "title", "items" }` and/or `{ "title", "body" }`. Title 1–40 chars, max 8 sections.
+A section is `{ "title", "items" }` and/or `{ "title", "body" }`. Title 1–40 chars, max 8 sections. `body` 1–500 chars.
+
+`Find me` / `Links` / `Socials` is lifted next to the name: `items` are social chips, `body` is the about blurb.
 
 ```json
 {
   "username": "ivan",
   "displayName": "Ivan Matveev",
-  "headline": "Backend Engineer × AI",
+  "headline": "AI Engineer",
   "sections": [
     {
-      "title": "What I actually ship",
-      "items": [{ "name": "Pi Agent", "source": "self_reported", "url": "https://pi.dev" }]
-    },
-    {
-      "title": "Tools I live in",
-      "items": [{ "name": "Claude Code", "source": "observed", "url": "https://claude.com/product/claude-code" }]
-    },
-    {
       "title": "How I work",
-      "items": [{ "name": "Multi-agent coding", "source": "inferred" }],
-      "body": "I use Markdown tasks because agents can edit them."
+      "body": "Orca is the terminal and the control plane. I go Claude Code first, then Codex, then pi with z.ai (glm). I mostly work through subagents."
+    },
+    {
+      "title": "Tools",
+      "items": [
+        { "name": "Claude Code", "source": "observed", "url": "https://claude.com/product/claude-code" }
+      ]
+    },
+    {
+      "title": "Skills I run",
+      "items": [
+        { "name": "Superpowers", "source": "self_reported", "url": "https://github.com/obra/superpowers" }
+      ]
+    },
+    {
+      "title": "Projects",
+      "items": [
+        { "name": "WhoAmI", "source": "self_reported", "url": "https://github.com/blackbalancef/whoami-skill" }
+      ]
+    },
+    {
+      "title": "Currently exploring",
+      "body": "Looking for mix-and-match multi-agent work across providers and harnesses, not another control plane."
+    },
+    {
+      "title": "Find me",
+      "body": "At work I build a harness for an agent that helps teachers create learning courses. I also ship my own apps, Telegram bots, and services — listed below.",
+      "items": [
+        { "name": "GitHub", "source": "observed", "url": "https://github.com/blackbalancef" }
+      ]
     }
   ]
 }
 ```
 
+Do not duplicate the How I work paragraph as chips underneath it.
+
 `source` is `observed` | `inferred` | `self_reported`. Optional `url` / `icon` are https official homepage and icon.
 
 GET profile JSON may include `avatarUrl`. That field is **server-generated** (our origin). Never put a remote image URL into the profile. Never send `avatar` / `avatarUrl` on publish or update except to clear with the avatar command.
 
-The older fields `tools`, `stack`, `workflows`, `hiddenGems`, `exploring`, and `howIWork` are still accepted. Do not write those keys for new profiles unless you also need them as a fallback.
+The older fields `tools`, `stack`, `workflows`, `hiddenGems`, `exploring`, and `howIWork` are still accepted.
 
 ## Custom site
 

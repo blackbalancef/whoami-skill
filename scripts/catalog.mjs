@@ -23,6 +23,7 @@ export const TOOL_LINKS = {
   docker: { url: "https://www.docker.com", icon: "https://cdn.simpleicons.org/docker" },
   figma: { url: "https://www.figma.com", icon: "https://cdn.simpleicons.org/figma" },
   ghostty: { url: "https://ghostty.org", icon: favicon("ghostty.org") },
+  github: { url: "https://github.com", icon: "https://cdn.simpleicons.org/github" },
   git: { url: "https://git-scm.com", icon: "https://cdn.simpleicons.org/git" },
   go: { url: "https://go.dev", icon: "https://cdn.simpleicons.org/go" },
   iterm: { url: "https://iterm2.com", icon: "https://cdn.simpleicons.org/iterm2" },
