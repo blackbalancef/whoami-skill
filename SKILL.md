@@ -140,6 +140,8 @@ The older fields `tools`, `stack`, `workflows`, `hiddenGems`, `exploring`, and `
 
 Optional. The default WhoAmI page stays until the owner publishes a built site.
 
+`site init` downloads `GET {API}/v1/designs/classic` (the visual shell of the default page, no profile records) and writes live JSON from `GET /v1/me` into `#whoami-profile` plus `profile.json`. Customize those files, then upload. Data stays on the profile JSON endpoints; the zip is the look.
+
 ```bash
 node scripts/whoami.mjs site init --dir ./site
 node scripts/whoami.mjs site upload --dir ./site

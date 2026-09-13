@@ -263,15 +263,48 @@ async function main() {
   if (command === "site" && args._[1] === "init") {
     const dir = args.dir || "./site";
     mkdirSync(dir, { recursive: true });
-    writeFileSync(join(dir, "index.html"), starterHtml());
-    if (creds.editToken && (creds.apiBase || apiBase)) {
+    const base = creds.apiBase || apiBase;
+    let kind = "stub";
+    if (base) {
+      try {
+        const design = await api("GET", "/v1/designs/classic", { apiBase: base });
+        if (design?.kind === "classic" && Array.isArray(design.files)) {
+          for (const file of design.files) {
+            const rel = String(file.path || "");
+            if (!rel || rel.includes("..") || rel.startsWith("/") || rel.includes("\\")) {
+              continue;
+            }
+            writeFileSync(join(dir, rel), String(file.content ?? ""));
+          }
+          kind = "classic";
+        }
+      } catch {
+        // Offline or older API: keep the tiny stub.
+      }
+    }
+    if (kind === "stub") {
+      writeFileSync(join(dir, "index.html"), starterHtml());
+    }
+    if (creds.editToken && base) {
       const me = await api("GET", "/v1/me", {
-        apiBase: creds.apiBase || apiBase,
+        apiBase: base,
         token: creds.editToken,
       });
       writeFileSync(join(dir, "profile.json"), `${JSON.stringify(me, null, 2)}\n`);
+      const indexPath = join(dir, "index.html");
+      try {
+        const html = readFileSync(indexPath, "utf8");
+        const json = JSON.stringify(me).replace(/</g, "\\u003c");
+        const bound = html.replace(
+          /<script id="whoami-profile" type="application\/json">null<\/script>/,
+          `<script id="whoami-profile" type="application/json">${json}</script>`,
+        );
+        if (bound !== html) writeFileSync(indexPath, bound);
+      } catch {
+        // Stub starter has no #whoami-profile hook.
+      }
     }
-    process.stdout.write(`Wrote starter site to ${dir}\n`);
+    process.stdout.write(`Wrote ${kind} site to ${dir}\n`);
     return;
   }
 
