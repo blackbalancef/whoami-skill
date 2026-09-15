@@ -2,7 +2,7 @@
 
 Open-source skill that turns your existing AI agent into a WhoAmI identity agent.
 
-Install this repository in Claude Code, Codex, Cursor, Grok, or any compatible agent, then tell it:
+The public WhoAmI instance is **[whoami.goodpipl.com](https://whoami.goodpipl.com)**. Get a creation code there ("Copy prompt" on the landing), install this repository in Claude Code, Codex, Cursor, Grok, or any compatible agent, then tell it:
 
 ```text
 Install the WhoAmI skill from https://github.com/blackbalancef/whoami-skill
@@ -37,3 +37,8 @@ node scripts/whoami.mjs site init --dir ./site
 node scripts/whoami.mjs site upload --dir ./site
 node scripts/whoami.mjs site publish
 ```
+
+## Links
+
+- Website: https://whoami.goodpipl.com
+- Example profile: https://whoami.goodpipl.com/ivanmatveev
