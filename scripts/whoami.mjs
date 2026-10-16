@@ -309,7 +309,7 @@ async function main() {
   }
 
   if (!apiBase) {
-    throw new Error("Set --api or WHOAMI_API_BASE to the Convex .convex.site URL");
+    throw new Error("Set --api or WHOAMI_API_BASE to the WhoAmI API base (public instance: https://whoami.goodpipl.com)");
   }
 
   if (command === "publish") {
