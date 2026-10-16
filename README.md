@@ -9,8 +9,10 @@ Install the WhoAmI skill from https://github.com/blackbalancef/whoami-skill
 and create my profile.
 
 Creation code: XXXX-XXXX
-API: https://<your-deployment>.convex.site
+API: https://whoami.goodpipl.com
 ```
+
+The landing prompt fills in the API line. A self-hosted instance uses its own origin there.
 
 ```text
 whoami-skill/
@@ -37,6 +39,8 @@ node scripts/whoami.mjs site init --dir ./site
 node scripts/whoami.mjs site upload --dir ./site
 node scripts/whoami.mjs site publish
 ```
+
+Wallet card: every profile gets one, signed by the site — no Apple Developer account needed. Apple Wallet: `https://whoami.goodpipl.com/wallet/<username>` (open on iPhone in Safari). Google Wallet: `https://whoami.goodpipl.com/wallet/<username>/google`.
 
 ## Links
 

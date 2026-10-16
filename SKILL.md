@@ -1,6 +1,6 @@
 ---
 name: whoami
-description: Create and maintain a WhoAmI public profile from the user's local environment. Use when the user wants to create, publish, or update their WhoAmI page, scan their tools/stack, or change whoami.ai identity.
+description: Create and maintain a WhoAmI public profile from the user's local environment. Use when the user wants to create, publish, or update their WhoAmI page, scan their tools/stack, get their Apple or Google Wallet card, or change whoami.ai identity.
 ---
 
 # WhoAmI Skill
@@ -9,7 +9,9 @@ Turn the user's existing agent into an identity agent.
 
 Do not create a new agent. Do not invent a web dashboard. Publish only JSON the user has reviewed.
 
-API base comes from the user's prompt (`API: https://….convex.site`), `WHOAMI_API_BASE`, or `~/.whoami/credentials.json`.
+API base comes from the user's prompt (`API: https://…`), `WHOAMI_API_BASE`, or `~/.whoami/credentials.json`. The public instance is `https://whoami.goodpipl.com` — the site and the API share that origin.
+
+After publish, `update`, `me`, `avatar`, and `site` use the `apiBase` saved in credentials; `--api` does not override it. If every call to the saved base returns 404 (for example an old `*.convex.site` address), the instance moved. Do not re-publish and do not ask for a new creation code: set `apiBase` in `~/.whoami/credentials.json` to the current base (the one from the user's latest prompt, or the public instance), keep `editToken` and `username`, then run `node scripts/whoami.mjs me` to confirm.
 
 The landing "Copy prompt" only installs this skill and passes a creation code. **This file is the full instruction set.** Follow it.
 
@@ -68,7 +70,7 @@ Show the exact public JSON. Say clearly: **this will be public**. Wait for appro
 node scripts/whoami.mjs publish --code XXXX-XXXX --profile ./profile.json --api "$WHOAMI_API_BASE"
 ```
 
-Store the returned `editToken` at `~/.whoami/credentials.json` (mode 0600). Tell the user their URL.
+Store the returned `editToken` at `~/.whoami/credentials.json` (mode 0600). Tell the user their URL and their wallet card links (see Wallet card).
 
 ### 6. UPDATE
 
@@ -101,6 +103,19 @@ node scripts/whoami.mjs avatar --file /absolute/or/relative/path.jpg
 node scripts/whoami.mjs avatar --clear
 ```
 
+### Wallet card
+
+Every published profile already has a wallet card. The WhoAmI site signs it with its own Apple Pass Type ID certificate and Google Wallet issuer, so the user needs **no Apple Developer account, no certificate, and no third-party pass builder**. Never tell them they do, and never build or sign a `.pkpass` yourself.
+
+When the user asks for a wallet card, a business card, or a QR for their page, take the origin of their profile URL (`https://whoami.goodpipl.com/ivan` → `https://whoami.goodpipl.com`) and give them:
+
+- Apple Wallet: `{origin}/wallet/{username}` — open it on the iPhone in Safari, then tap Add.
+- Google Wallet: `{origin}/wallet/{username}/google`.
+
+The Share button on the profile page has the same two buttons. `GET {origin}/wallet/status` returns `{ "apple": boolean, "google": boolean }`; if one is `false`, that instance has no signing configured — say so instead of sending a link that answers 503.
+
+The card holds display name, `@username`, headline, and a QR to the profile. It is a snapshot: after a name or headline change, open the Apple link again and add the card; it replaces the old one (allow a few minutes for caches). The card design is the same for every profile and cannot be customized yet.
+
 ## Privacy
 
 Never publish:
@@ -112,7 +127,7 @@ Never publish:
 - private documents
 - photos the owner did not explicitly review for a public page
 
-Username: `^[a-z][a-z0-9]{1,23}$`. Reserved: api, badge, create, explore, preview, skill, admin, www, whoami, settings, login, me, v1.
+Username: `^[a-z][a-z0-9]{1,23}$`. Reserved: api, badge, wallet, create, explore, preview, skill, admin, www, whoami, settings, login, me, v1.
 
 ## Profile shape
 
